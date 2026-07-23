@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopster API - Docs для Frontend</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: #0a0a0f; color: #e2e8f0;
+            line-height: 1.6; padding: 20px;
+        }
+        .container { max-width: 1000px; margin: 0 auto; }
+        h1 { color: #60a5fa; text-align: center; margin-bottom: 30px; font-size: 36px; }
+        h2 { color: #60a5fa; margin: 20px 0 10px; border-bottom: 1px solid #1e293b; padding-bottom: 8px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; background: #0f172a; }
+        th, td { padding: 12px 15px; text-align: left; border: 1px solid #1e293b; }
+        th { background: #1e293b; color: #fff; font-weight: 600; }
+        tr:nth-child(odd) { background: #111827; }
+        code { background: #1e293b; padding: 2px 8px; border-radius: 4px; font-family: monospace; }
+        .badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; margin: 2px; }
+        .badge-get { background: #059669; color: #fff; }
+        .badge-post { background: #2563eb; color: #fff; }
+        .badge-put { background: #7c3aed; color: #fff; }
+        .badge-patch { background: #8b5cf6; color: #fff; }
+        .badge-delete { background: #dc2626; color: #fff; }
+        .badge-auth { background: #0891b2; color: #fff; }
+        .badge-admin { background: #f59e0b; color: #000; }
+        .badge-public { background: #64748b; color: #fff; }
+        .warning { background: #dc262620; border-left: 4px solid #dc2626; padding: 15px; margin: 20px 0; }
+        .workflow { background: #7c3aed20; border-left: 4px solid #7c3aed; padding: 15px; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛍️ Shopster API Documentation</h1>
+
+        <h2>🔐 JWT Токени</h2>
+        <div class="workflow">
+            <strong>Де брати токен:</strong>
+            <ul>
+                <li><code>POST /api/auth/login</code> або <code>POST /api/auth/register</code></li>
+                <li>Отримаєте <code>accessToken</code> (7 днів) та <code>refreshToken</code> (30 днів)</li>
+            </ul>
+        </div>
+
+        <table>
+            <tr>
+                <th>Заголовок</th>
+                <th>Значення</th>
+            </tr>
+            <tr>
+                <td><code>Authorization</code></td>
+                <td><code>Bearer YOUR_ACCESS_TOKEN</code></td>
+            </tr>
+        </table>
+
+        <h2>📦 Products</h2>
+        <table>
+            <tr><th>Метод</th><th>URL</th><th>Авторизація</th><th>Опис</th></tr>
+            <tr><td><span class="badge badge-get">GET</span></td><td><code>/products</code></td><td><span class="badge badge-public">Публічний</span></td><td>Список товарів</td></tr>
+            <tr><td colspan="4"><code>?page=1&limit=20&category=ID&search=q&sort=price,-price</code></td></tr>
+            <tr><td><span class="badge badge-get">GET</span></td><td><code>/products/:id</code></td><td><span class="badge badge-public">Публічний</span></td><td>Один товар</td></tr>
+        </table>
+
+        <h2>📂 Categories</h2>
+        <table>
+            <tr><th>Метод</th><th>URL</th><th>Авторизація</th><th>Опис</th></tr>
+            <tr><td><span class="badge badge-get">GET</span></td><td><code>/categories</code></td><td><span class="badge badge-public">Публічний</span></td><td>Список категорій</td></tr>
+        </table>
+
+        <h2>🛒 Cart</h2>
+        <table>
+            <tr><th>Метод</th><th>URL</th><th>Авторизація</th><th>Опис</th></tr>
+            <tr><td><span class="badge badge-get">GET</span></td><td><code>/cart</code></td><td><span class="badge badge-auth">Bearer</span></td><td>Мій кошик</td></tr>
+            <tr><td><span class="badge badge-post">POST</span></td><td><code>/cart</code></td><td><span class="badge badge-auth">Bearer</span></td><td>Додати: <code>{ "productId": "ID", "quantity": 1 }</code></td></tr>
+        </table>
+
+        <h2>📦 Orders - ВАЖЛИВО!</h2>
+        <div class="warning">
+            <strong>Щоб створити замовлення:</strong>
+            <ol>
+                <li><strong>Спочатку</strong> додайте товари в кошик (POST /cart)</li>
+                <li><strong>Потім</strong> створіть замовлення (POST /orders)</li>
+            </ol>
+            <strong>Автоматично береться:</strong> user з токену, товари з кошика, ціна
+        </div>
+
+        <table>
+            <tr><th>Метод</th><th>URL</th><th>Авторизація</th><th>Опис</th></tr>
+            <tr><td><span class="badge badge-get">GET</span></td><td><code>/orders/my</code></td><td><span class="badge badge-auth">Bearer</span></td><td>Мої замовлення</td></tr>
+            <tr><td><span class="badge badge-post">POST</span></td><td><code>/orders</code></td><td><span class="badge badge-auth">Bearer</span></td><td>Створити (тіло тільки shippingAddress!)</td></tr>
+        </table>
+
+        <table>
+            <tr><th colspan="2">POST /orders тіло (тільки це!)</th></tr>
+            <tr><td colspan="2"><pre>{
+  "shippingAddress": {
+    "fullName": "Іван Петров",
+    "address": "вул. Хрещатик 15",
+    "city": "Київ",
+    "postalCode": "01001",
+    "phone": "+380991234567"
+  }
+}</pre></td></tr>
+        </table>
+
+        <h2>📝 Reviews</h2>
+        <table>
+            <tr><th>Метод</th><th>URL</th><th>Авторизація</th><th>Опис</th></tr>
+            <tr><td><span class="badge badge-get">GET</span></td><td><code>/reviews/product/:productId</code></td><td><span class="badge badge-public">Публічний</span></td><td>Відгуки до товару</td></tr>
+            <tr><td><span class="badge badge-post">POST</span></td><td><code>/reviews</code></td><td><span class="badge badge-auth">Bearer</span></td><td><code>{ "productId": "ID", "rating": 5, "comment": "..." }</code></td></tr>
+        </table>
+
+        <h2>👤 Auth</h2>
+        <table>
+            <tr><th>Метод</th><th>URL</th><th>Авторизація</th><th>Опис</th></tr>
+            <tr><td><span class="badge badge-post">POST</span></td><td><code>/auth/register</code></td><td class="badge-public">Публічний</td><td>Реєстрація</td></tr>
+            <tr><td><span class="badge badge-post">POST</span></td><td><code>/auth/login</code></td><td class="badge-public">Публічний</td><td>Логін</td></tr>
+        </table>
+
+        <h2>🔄 Workflow (приклад)</h2>
+        <pre>
+// 1. Логін
+const { accessToken } = await fetch('/api/auth/login', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ email, password })
+}).then(r => r.json());
+
+// 2. Додати в кошик
+await fetch('/api/cart', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer ' + accessToken
+  },
+  body: JSON.stringify({ productId: '...', quantity: 1 })
+});
+
+// 3. Створити замовлення (кошик очиститься автоматично!)
+await fetch('/api/orders', {
+  method: 'POST',
+  headers: { Authorization: 'Bearer ' + accessToken },
+  body: JSON.stringify({ shippingAddress: { ... } })
+});
+</pre>
+    </div>
+</body>
+</html>
